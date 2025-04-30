@@ -1,9 +1,5 @@
-FROM gradle:8.2.1-jdk21 AS builder
+FROM gradle:8.8.0-jdk21-alpine
 WORKDIR /app
-COPY . .
-RUN gradle build --no-daemon
-
-FROM eclipse-temurin:21-jre
-WORKDIR /app
-COPY --from=builder /app/build/libs/*.jar app.jar
-ENTRYPOINT ["java","-jar","app.jar"]
+COPY build/libs/epsylon-1.0.jar epsylon-1.0.jar
+EXPOSE 25565
+CMD ["java","-jar","epsylon-1.0.jar"]
