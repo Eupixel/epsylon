@@ -1,19 +1,17 @@
 package dev.aquestry
 
+import dev.aquestry.util.MinecraftServerUtil
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.minestom.server.MinecraftServer
-import net.minestom.server.event.GlobalEventHandler
 import net.minestom.server.event.player.AsyncPlayerConfigurationEvent
 import net.minestom.server.event.server.ServerListPingEvent
-import net.minestom.server.instance.InstanceContainer
-import net.minestom.server.instance.InstanceManager
 import net.minestom.server.network.packet.server.common.TransferPacket
 
 fun main() {
-    val minecraftServer: MinecraftServer = MinecraftServer.init()
-    val instanceManager: InstanceManager = MinecraftServer.getInstanceManager()
-    val instanceContainer: InstanceContainer = instanceManager.createInstanceContainer()
-    val globalEventHandler: GlobalEventHandler = MinecraftServer.getGlobalEventHandler()
+    val minecraftServer = MinecraftServer.init()
+    val instanceManager = MinecraftServer.getInstanceManager()
+    val instanceContainer = instanceManager.createInstanceContainer()
+    val globalEventHandler = MinecraftServer.getGlobalEventHandler()
 
     globalEventHandler.addListener(AsyncPlayerConfigurationEvent::class.java) { event ->
         event.player.sendPacket(TransferPacket("gommehd.net", 25565))
@@ -27,4 +25,6 @@ fun main() {
     }
 
     minecraftServer.start("0.0.0.0", 25565)
+    val util = MinecraftServerUtil()
+    util.createServer("test",25566)
 }

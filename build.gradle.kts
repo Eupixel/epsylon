@@ -14,7 +14,9 @@ repositories {
 dependencies {
     implementation("net.minestom:minestom-snapshots:1_21_5-2398778b46")
     implementation("net.kyori:adventure-text-minimessage:4.20.0")
-    runtimeOnly("ch.qos.logback:logback-classic:1.5.13")
+    implementation("com.github.docker-java:docker-java:3.3.3")
+    implementation("org.slf4j:slf4j-simple:2.0.6")
+    implementation("com.github.docker-java:docker-java-transport-httpclient5:3.3.3")
 }
 
 tasks.test {
