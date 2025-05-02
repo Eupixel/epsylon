@@ -37,6 +37,7 @@ class ServerUtil(
     private val client: DockerClient = DockerClientImpl.getInstance(config, httpClient)
     private val servers = mutableListOf<Server>()
 
+    @Suppress("DEPRECATION")
     suspend fun createServer(image: String, type: String): Server = withContext(Dispatchers.IO) {
         client.pullImageCmd(image)
             .start()
@@ -60,7 +61,7 @@ class ServerUtil(
         val id = requireNotNull(response.id)
         client.startContainerCmd(id).exec()
 
-        val server = Server(id, type, image, "0.0.0.0", port, false)
+        val server = Server(id, type, image, "0.0.0.0", port, 0,false)
         synchronized(this@ServerUtil) {
             servers.add(server)
         }

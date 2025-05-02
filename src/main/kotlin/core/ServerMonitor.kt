@@ -5,25 +5,25 @@ import dev.aquestry.su
 import dev.aquestry.util.PingUtil
 import kotlinx.coroutines.*
 
-class ServerMonitor(
-    private val scope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
-) {
+class ServerMonitor() {
+
     private var job: Job? = null
 
     fun start() {
+        val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
         job = scope.launch {
             while (isActive) {
                 su.getServers().forEach {
                     val port = au.getLobby().port
-                    var host = it.host
-                    if(it.host == "host") {
-                        host = "localhost"
-                    }
-                    val old = it.state
-                    val new = PingUtil.isOnline(host, port)
-                    if(old != new) {
-                        it.state = new
-                        println("New server state $new for ${it.id}")
+                    it.apply {
+                        val hostName = host.takeIf { it != "host" } ?: "localhost"
+                        PingUtil.isOnline(hostName, port).also { online ->
+                            if (state != online) {
+                                state = online
+                                println("New server state $online for $id")
+                            }
+                            if (online) players = PingUtil.getPlayerCount(hostName, port)
+                        }
                     }
                 }
                 delay(1_000L)

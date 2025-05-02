@@ -15,15 +15,18 @@ class Entrypoint {
         val globalEventHandler = MinecraftServer.getGlobalEventHandler()
 
         globalEventHandler.addListener(AsyncPlayerConfigurationEvent::class.java) { event ->
-            val target = au.getLobby()
-            val port = au.getLobby().port
-            var host = "0"
-            if(target.host == "host" && event.player.playerConnection.serverAddress != null) {
-                host = event.player.playerConnection.serverAddress.toString()
+            au.getLobby().let { lobby ->
+                val hostName = if (lobby.host == "host") {
+                    event.player.playerConnection.serverAddress ?: "0"
+                } else {
+                    "0"
+                }
+                event.apply {
+                    spawningInstance = instanceContainer
+                    println("${player.username} joined to $hostName:${lobby.port}")
+                    player.sendPacket(TransferPacket(hostName, lobby.port))
+                }
             }
-            event.spawningInstance = instanceContainer
-            println("${event.player.username} joined to $host:$port")
-            event.player.sendPacket(TransferPacket(host, port))
         }
 
         globalEventHandler.addListener(ServerListPingEvent::class.java) { event ->

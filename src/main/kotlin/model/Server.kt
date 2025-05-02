@@ -6,5 +6,6 @@ data class Server(
     val image: String,
     val host: String,
     val port: Int,
+    var players: Int,
     var state: Boolean,
 )
