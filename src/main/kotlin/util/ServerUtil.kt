@@ -1,6 +1,5 @@
 package dev.aquestry.util
 
-
 import com.github.dockerjava.api.DockerClient
 import com.github.dockerjava.api.command.CreateContainerResponse
 import com.github.dockerjava.api.model.ExposedPort
@@ -10,15 +9,18 @@ import com.github.dockerjava.core.DefaultDockerClientConfig
 import com.github.dockerjava.httpclient5.ApacheDockerHttpClient
 import com.github.dockerjava.core.DockerClientConfig
 import com.github.dockerjava.core.DockerClientImpl
+import dev.aquestry.model.Server
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import java.io.IOException
+import java.net.ServerSocket
 import java.time.Duration
 
-data class Server(val id: String, val port: Int)
-
-class MinecraftServerUtil(
-    dockerUri: String = "npipe:////./pipe/docker_engine",
-    private val image: String = "itzg/minecraft-server:latest"
+class ServerUtil(
+    dockerUri: String,
+    private val minPort: Int,
+    private val maxPort: Int
 ) {
-
 
     private val config: DockerClientConfig = DefaultDockerClientConfig.createDefaultConfigBuilder()
         .withDockerHost(dockerUri)
@@ -35,26 +37,38 @@ class MinecraftServerUtil(
     private val client: DockerClient = DockerClientImpl.getInstance(config, httpClient)
     private val servers = mutableListOf<Server>()
 
-    fun createServer(name: String, externalPort: Int): String {
-        client.pullImageCmd(image).start().awaitCompletion()
+    suspend fun createServer(image: String, type: String): Server = withContext(Dispatchers.IO) {
+        client.pullImageCmd(image)
+            .start()
+            .awaitCompletion()
+
         val exposedPort = ExposedPort.tcp(25565)
-        val binding = Ports.Binding.bindPort(externalPort)
+        val port = findFreePort()
+        val binding = Ports.Binding.bindPort(port)
         val portBinding = PortBinding(binding, exposedPort)
+
         val response: CreateContainerResponse = client.createContainerCmd(image)
-            .withName(name)
-            .withEnv("EULA=TRUE")
+            .withEnv(
+                "EULA=TRUE",
+                "MOTD=$image:$port",
+                "CUSTOM_SERVER_PROPERTIES=accepts-transfers=true"
+            )
             .withExposedPorts(exposedPort)
             .withPortBindings(portBinding)
             .exec()
-        val id = requireNotNull(response.id) { "Failed to create container: id was null" }
+
+        val id = requireNotNull(response.id)
         client.startContainerCmd(id).exec()
-        servers.add(Server(id, externalPort))
-        return id
+
+        val server = Server(id, type, image, "0.0.0.0", port, false)
+        synchronized(this@ServerUtil) {
+            servers.add(server)
+        }
+        println("Created Server: type=$type, port=$port, id=$id")
+        server
     }
 
-    fun getServers(): List<Server> {
-        return servers.toList()
-    }
+    fun getServers(): List<Server> = servers.toList()
 
     fun deleteServer(id: String) {
         client.stopContainerCmd(id).withTimeout(10).exec()
@@ -62,17 +76,16 @@ class MinecraftServerUtil(
         servers.removeAll { it.id == id }
     }
 
-    fun startServer(id: String) {
-        client.startContainerCmd(id).exec()
+    fun getType(type: String): Server {
+        return servers.first { it.type == type }
     }
 
-    fun stopServer(id: String) {
-        client.stopContainerCmd(id).withTimeout(10).exec()
-    }
-
-    fun getStatus(id: String): String {
-        val info = client.inspectContainerCmd(id).exec()
-        val status = info.state?.status
-        return requireNotNull(status) { "Failed to get status for container: $id" }
+    fun findFreePort(): Int {
+        (minPort..maxPort).forEach { port ->
+            try {
+                ServerSocket(port).use { return port }
+            } catch (_: IOException) {}
+        }
+        return 0
     }
 }

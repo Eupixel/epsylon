@@ -1,30 +1,19 @@
 package dev.aquestry
 
-import dev.aquestry.util.MinecraftServerUtil
-import net.kyori.adventure.text.minimessage.MiniMessage
-import net.minestom.server.MinecraftServer
-import net.minestom.server.event.player.AsyncPlayerConfigurationEvent
-import net.minestom.server.event.server.ServerListPingEvent
-import net.minestom.server.network.packet.server.common.TransferPacket
+import dev.aquestry.config.Config
+import dev.aquestry.core.AutoScaler
+import dev.aquestry.core.Entrypoint
+import dev.aquestry.core.ServerMonitor
+import dev.aquestry.core.ShutdownManager
+import dev.aquestry.util.ServerUtil
 
-fun main() {
-    val minecraftServer = MinecraftServer.init()
-    val instanceManager = MinecraftServer.getInstanceManager()
-    val instanceContainer = instanceManager.createInstanceContainer()
-    val globalEventHandler = MinecraftServer.getGlobalEventHandler()
+val su = ServerUtil(Config.dockerUri, Config.minPort, Config.maxPort)
+val au = AutoScaler()
+val sm = ServerMonitor()
 
-    globalEventHandler.addListener(AsyncPlayerConfigurationEvent::class.java) { event ->
-        event.player.sendPacket(TransferPacket("gommehd.net", 25565))
-        event.spawningInstance = instanceContainer
-    }
-
-    globalEventHandler.addListener(ServerListPingEvent::class.java) { event ->
-        event.responseData.online = 0
-        event.responseData.maxPlayer = 787
-        event.responseData.description = MiniMessage.miniMessage().deserialize("<rainbow>entrypoint</rainbow>")
-    }
-
-    minecraftServer.start("0.0.0.0", 25565)
-    val util = MinecraftServerUtil()
-    util.createServer("test",25566)
+suspend fun main() {
+    ShutdownManager.start()
+    Entrypoint().start()
+    sm.start()
+    au.start()
 }
