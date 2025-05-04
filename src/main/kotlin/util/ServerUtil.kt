@@ -1,7 +1,6 @@
 package dev.aquestry.util
 
 import com.github.dockerjava.api.DockerClient
-import com.github.dockerjava.api.command.CreateContainerResponse
 import com.github.dockerjava.api.model.ExposedPort
 import com.github.dockerjava.api.model.PortBinding
 import com.github.dockerjava.api.model.Ports
@@ -9,21 +8,17 @@ import com.github.dockerjava.core.DefaultDockerClientConfig
 import com.github.dockerjava.httpclient5.ApacheDockerHttpClient
 import com.github.dockerjava.core.DockerClientConfig
 import com.github.dockerjava.core.DockerClientImpl
+import dev.aquestry.config.Config
 import dev.aquestry.model.Server
+import dev.aquestry.sr
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.io.IOException
-import java.net.ServerSocket
 import java.time.Duration
 
-class ServerUtil(
-    dockerUri: String,
-    private val minPort: Int,
-    private val maxPort: Int
-) {
+class ServerUtil() {
 
     private val config: DockerClientConfig = DefaultDockerClientConfig.createDefaultConfigBuilder()
-        .withDockerHost(dockerUri)
+        .withDockerHost(Config.dockerUri)
         .build()
 
     private val httpClient: ApacheDockerHttpClient = ApacheDockerHttpClient.Builder()
@@ -35,58 +30,47 @@ class ServerUtil(
         .build()
 
     private val client: DockerClient = DockerClientImpl.getInstance(config, httpClient)
-    private val servers = mutableListOf<Server>()
+
+    fun start() {
+        client.pullImageCmd(Config.lobbyImage).start()
+    }
 
     @Suppress("DEPRECATION")
     suspend fun createServer(image: String, type: String): Server = withContext(Dispatchers.IO) {
-        client.pullImageCmd(image)
-            .start()
-            .awaitCompletion()
-
         val exposedPort = ExposedPort.tcp(25565)
-        val port = findFreePort()
-        val binding = Ports.Binding.bindPort(port)
-        val portBinding = PortBinding(binding, exposedPort)
+        val portBinding = PortBinding(Ports.Binding.bindPort(0), exposedPort)
 
-        val response: CreateContainerResponse = client.createContainerCmd(image)
+        val response = client.createContainerCmd(image)
             .withEnv(
                 "EULA=TRUE",
-                "MOTD=$image:$port",
                 "CUSTOM_SERVER_PROPERTIES=accepts-transfers=true"
             )
             .withExposedPorts(exposedPort)
             .withPortBindings(portBinding)
             .exec()
+            .also { requireNotNull(it.id) }
+            .let {
+                client.startContainerCmd(it.id).exec()
+                it
+            }
 
-        val id = requireNotNull(response.id)
-        client.startContainerCmd(id).exec()
+        val inspect = client.inspectContainerCmd(response.id).exec()
+        val hostPort = inspect.networkSettings
+            .ports
+            .bindings[exposedPort]
+            ?.firstOrNull()
+            ?.hostPortSpec
+            ?.toInt()
+            ?: error("No host port bound for $exposedPort")
 
-        val server = Server(id, type, image, "0.0.0.0", port, 0,false)
-        synchronized(this@ServerUtil) {
-            servers.add(server)
-        }
-        println("Created Server: type=$type, port=$port, id=$id")
+        val server = Server(response.id, type, image,"127.0.0.1", hostPort,0,false)
+        sr.registerServer(server)
+        println("Created Server: type=$type, hostPort=$hostPort, id=${response.id}")
         server
     }
-
-    fun getServers(): List<Server> = servers.toList()
 
     fun deleteServer(id: String) {
         client.stopContainerCmd(id).withTimeout(10).exec()
         client.removeContainerCmd(id).exec()
-        servers.removeAll { it.id == id }
-    }
-
-    fun getType(type: String): Server {
-        return servers.first { it.type == type }
-    }
-
-    fun findFreePort(): Int {
-        (minPort..maxPort).forEach { port ->
-            try {
-                ServerSocket(port).use { return port }
-            } catch (_: IOException) {}
-        }
-        return 0
     }
 }

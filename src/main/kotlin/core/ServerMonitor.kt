@@ -1,11 +1,10 @@
 package dev.aquestry.core
 
-import dev.aquestry.au
-import dev.aquestry.su
+import dev.aquestry.sr
 import dev.aquestry.util.PingUtil
 import kotlinx.coroutines.*
 
-class ServerMonitor() {
+class ServerMonitor {
 
     private var job: Job? = null
 
@@ -13,17 +12,16 @@ class ServerMonitor() {
         val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
         job = scope.launch {
             while (isActive) {
-                su.getServers().forEach {
-                    val port = au.getLobby().port
-                    it.apply {
-                        val hostName = host.takeIf { it != "host" } ?: "localhost"
-                        PingUtil.isOnline(hostName, port).also { online ->
-                            if (state != online) {
-                                state = online
-                                println("New server state $online for $id")
-                            }
-                            if (online) players = PingUtil.getPlayerCount(hostName, port)
-                        }
+                sr.getServers().forEach { server ->
+                    val hostName = server.host.takeIf { it != "host" } ?: "localhost"
+                    val port = server.port
+                    val online = PingUtil.isOnline(hostName, port)
+                    if (server.state != online) {
+                        server.state = online
+                        println("New server state $online for ${server.id}")
+                    }
+                    if (online) {
+                        server.players = PingUtil.getPlayerCount(hostName, port)
                     }
                 }
                 delay(1_000L)

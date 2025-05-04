@@ -1,13 +1,14 @@
 package dev.aquestry.core
 
 import dev.aquestry.sm
+import dev.aquestry.sr
 import dev.aquestry.su
 
-object ShutdownManager {
+class ShutdownTask {
     fun start() {
         Runtime.getRuntime().addShutdownHook(Thread {
             sm.stop()
-            su.getServers().forEach {
+            sr.getServers().forEach {
                 try {
                     su.deleteServer(it.id)
                 } catch (_: Exception) {}
