@@ -20,7 +20,7 @@ class Entrypoint {
             au.getLobby().let { lobby ->
                 event.apply {
                     spawningInstance = instanceContainer
-                    println("${player.username} joined to ${lobby.host}:${lobby.port}")
+                    println("${player.username} joined and was redirected to ${lobby.host}:${lobby.port}")
                     player.sendPacket(TransferPacket(lobby.host, lobby.port))
                 }
             }
