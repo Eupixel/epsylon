@@ -1,13 +1,13 @@
 plugins {
     kotlin("jvm") version "2.1.20"
     application
+    id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
 group = "dev.aquestry"
 version = "1.0"
 
 repositories {
-    maven("https://jitpack.io")
     mavenCentral()
 }
 
@@ -33,10 +33,11 @@ application {
     mainClass.set("dev.aquestry.MainKt")
 }
 
-tasks.jar {
+tasks.shadowJar {
+    archiveClassifier.set("all")
+    mergeServiceFiles()
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     manifest {
         attributes["Main-Class"] = application.mainClass.get()
     }
-    from(configurations.runtimeClasspath.get().map { if (it.isDirectory) it else zipTree(it) })
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }

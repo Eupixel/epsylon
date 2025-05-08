@@ -17,8 +17,12 @@ import java.time.Duration
 
 class ServerUtil() {
 
+    val entryHost = System.getenv("ENTRY_HOST") ?: "localhost"
+
+    val dockerHost = System.getenv("DOCKER_HOST") ?: Config.dockerHost
+
     private val config: DockerClientConfig = DefaultDockerClientConfig.createDefaultConfigBuilder()
-        .withDockerHost(Config.dockerUri)
+        .withDockerHost(dockerHost)
         .build()
 
     private val httpClient: ApacheDockerHttpClient = ApacheDockerHttpClient.Builder()
@@ -32,7 +36,7 @@ class ServerUtil() {
     private val client: DockerClient = DockerClientImpl.getInstance(config, httpClient)
 
     fun start() {
-        client.pullImageCmd(Config.lobbyImage).start()
+        client.pullImageCmd(Config.lobbyImage).start().awaitCompletion()
     }
 
     @Suppress("DEPRECATION")
@@ -63,9 +67,9 @@ class ServerUtil() {
             ?.toInt()
             ?: error("No host port bound for $exposedPort")
 
-        val server = Server(response.id, type, image,"127.0.0.1", hostPort,0,false)
+        val server = Server(response.id, type, image, entryHost, hostPort,0,false)
         sr.registerServer(server)
-        println("Created Server: type=$type, hostPort=$hostPort, id=${response.id}")
+        println("Created Server: type=$type, host=$entryHost, port=$hostPort, id=${response.id}")
         server
     }
 

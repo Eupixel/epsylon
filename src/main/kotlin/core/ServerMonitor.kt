@@ -22,6 +22,8 @@ class ServerMonitor {
                     }
                     if (online) {
                         server.players = PingUtil.getPlayerCount(hostName, port)
+                    } else {
+                        server.players = 0
                     }
                 }
                 delay(1_000L)

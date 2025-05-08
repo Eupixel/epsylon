@@ -1,7 +1,7 @@
 package dev.aquestry.config
 
 data object Config {
-    val dockerUri: String = "npipe:////./pipe/docker_engine"
+    val dockerHost: String = "npipe:////./pipe/docker_engine"
     val lobbyImage: String = "anton691/lovib:latest"
     val baseLobbies: Int = 3
     val maxLobbies: Int = 10

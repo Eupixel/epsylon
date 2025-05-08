@@ -16,15 +16,10 @@ class Entrypoint {
 
         globalEventHandler.addListener(AsyncPlayerConfigurationEvent::class.java) { event ->
             au.getLobby().let { lobby ->
-                val hostName = if (lobby.host == "host") {
-                    event.player.playerConnection.serverAddress ?: "0"
-                } else {
-                    "0"
-                }
                 event.apply {
                     spawningInstance = instanceContainer
-                    println("${player.username} joined to $hostName:${lobby.port}")
-                    player.sendPacket(TransferPacket(hostName, lobby.port))
+                    println("${player.username} joined to ${lobby.host}:${lobby.port}")
+                    player.sendPacket(TransferPacket(lobby.host, lobby.port))
                 }
             }
         }
