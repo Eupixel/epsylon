@@ -9,6 +9,8 @@ import net.minestom.server.network.packet.server.common.TransferPacket
 
 class Entrypoint {
     fun start() {
+        val motd = MiniMessage.miniMessage().deserialize(System.getenv("MOTD")?: "<blue>entrypoint</blue>")
+        val favicon = System.getenv("FAVICON")
         val minecraftServer = MinecraftServer.init()
         val instanceManager = MinecraftServer.getInstanceManager()
         val instanceContainer = instanceManager.createInstanceContainer()
@@ -27,7 +29,8 @@ class Entrypoint {
         globalEventHandler.addListener(ServerListPingEvent::class.java) { event ->
             event.responseData.online = 0
             event.responseData.maxPlayer = 787
-            event.responseData.description = MiniMessage.miniMessage().deserialize("<blue>entrypoint</blue>")
+            event.responseData.description = motd
+            event.responseData.favicon = favicon
         }
 
         minecraftServer.start("0.0.0.0", 25565)
