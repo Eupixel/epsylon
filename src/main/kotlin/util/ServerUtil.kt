@@ -43,11 +43,19 @@ class ServerUtil() {
     suspend fun createServer(image: String, type: String): Server = withContext(Dispatchers.IO) {
         val exposedPort = ExposedPort.tcp(25565)
         val portBinding = PortBinding(Ports.Binding.bindPort(0), exposedPort)
+        val lobbyRecord = System.getenv("LOBBY_RECORD") ?: "none"
+        val lobbyColl = System.getenv("LOBBY_COLL") ?: "none"
+        val pocketHost = System.getenv("POCKET_HOST") ?: "localhost"
+        val lobbySpawn = System.getenv("LOBBY_SPAWN") ?: "none"
 
         val response = client.createContainerCmd(image)
             .withEnv(
                 "EULA=TRUE",
-                "CUSTOM_SERVER_PROPERTIES=accepts-transfers=true"
+                "CUSTOM_SERVER_PROPERTIES=accepts-transfers=true",
+                "LOBBY_COLL=$lobbyColl",
+                "LOBBY_RECORD=$lobbyRecord",
+                "POCKET_HOST=$pocketHost",
+                "LOBBY_SPAWN=$lobbySpawn"
             )
             .withExposedPorts(exposedPort)
             .withPortBindings(portBinding)
