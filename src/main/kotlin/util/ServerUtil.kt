@@ -43,17 +43,13 @@ class ServerUtil() {
     suspend fun createServer(image: String, type: String): Server = withContext(Dispatchers.IO) {
         val exposedPort = ExposedPort.tcp(25565)
         val portBinding = PortBinding(Ports.Binding.bindPort(0), exposedPort)
-        val webdavHost = System.getenv("WEBDAV_HOST") ?: "localhost"
-        val webdavUser = System.getenv("WEBDAV_USER") ?: "none"
-        val webdavPass = System.getenv("WEBDAV_PASS") ?: "none"
+        val host = System.getenv("HOST") ?: "none"
+        val token = System.getenv("TOKEN") ?: "none"
 
         val response = client.createContainerCmd(image)
             .withEnv(
-                "EULA=TRUE",
-                "CUSTOM_SERVER_PROPERTIES=accepts-transfers=true",
-                "WEBDAV_HOST=$webdavHost",
-                "WEBDAV_USER=$webdavUser",
-                "WEBDAV_PASS=$webdavPass",
+                "HOST=$host",
+                "TOKEN=$token"
             )
             .withExposedPorts(exposedPort)
             .withPortBindings(portBinding)
