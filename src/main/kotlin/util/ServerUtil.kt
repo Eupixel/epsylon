@@ -19,7 +19,7 @@ class ServerUtil() {
 
     val entryHost = System.getenv("ENTRY_HOST") ?: "localhost"
 
-    val dockerHost = System.getenv("DOCKER_HOST") ?: Config.dockerHost
+    val dockerHost = System.getenv("DOCKER_HOST") ?: "npipe:////./pipe/docker_engine"
 
     private val config: DockerClientConfig = DefaultDockerClientConfig.createDefaultConfigBuilder()
         .withDockerHost(dockerHost)
