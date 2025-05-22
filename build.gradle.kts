@@ -4,7 +4,7 @@ plugins {
     id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
-group = "dev.aquestry"
+group = "net.eupixel"
 version = "1.0"
 
 repositories {
@@ -30,7 +30,7 @@ kotlin {
 }
 
 application {
-    mainClass.set("dev.aquestry.MainKt")
+    mainClass.set("net.eupixel.MainKt")
 }
 
 tasks.shadowJar {
