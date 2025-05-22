@@ -1,4 +1,4 @@
-package dev.aquestry.util
+package net.eupixel.util
 
 import com.github.dockerjava.api.DockerClient
 import com.github.dockerjava.api.model.ExposedPort
@@ -8,9 +8,9 @@ import com.github.dockerjava.core.DefaultDockerClientConfig
 import com.github.dockerjava.httpclient5.ApacheDockerHttpClient
 import com.github.dockerjava.core.DockerClientConfig
 import com.github.dockerjava.core.DockerClientImpl
-import dev.aquestry.config.Config
-import dev.aquestry.model.Server
-import dev.aquestry.sr
+import net.eupixel.config.Config
+import net.eupixel.model.Server
+import net.eupixel.sr
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.time.Duration

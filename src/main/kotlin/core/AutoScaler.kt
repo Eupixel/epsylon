@@ -1,9 +1,9 @@
-package dev.aquestry.core
+package net.eupixel.core
 
-import dev.aquestry.su
-import dev.aquestry.config.Config
-import dev.aquestry.model.Server
-import dev.aquestry.sr
+import net.eupixel.su
+import net.eupixel.config.Config
+import net.eupixel.model.Server
+import net.eupixel.sr
 
 class AutoScaler {
     suspend fun start() {

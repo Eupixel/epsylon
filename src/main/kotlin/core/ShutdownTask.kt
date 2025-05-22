@@ -1,8 +1,8 @@
-package dev.aquestry.core
+package net.eupixel.core
 
-import dev.aquestry.sm
-import dev.aquestry.sr
-import dev.aquestry.su
+import net.eupixel.sm
+import net.eupixel.sr
+import net.eupixel.su
 
 class ShutdownTask {
     fun start() {

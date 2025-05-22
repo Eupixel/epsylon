@@ -1,4 +1,4 @@
-package dev.aquestry.model
+package net.eupixel.model
 
 data class Server(
     val id: String,

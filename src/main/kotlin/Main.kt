@@ -1,11 +1,11 @@
-package dev.aquestry
+package net.eupixel
 
-import dev.aquestry.core.AutoScaler
-import dev.aquestry.core.Entrypoint
-import dev.aquestry.core.ServerMonitor
-import dev.aquestry.core.ServerRegister
-import dev.aquestry.core.ShutdownTask
-import dev.aquestry.util.ServerUtil
+import net.eupixel.core.AutoScaler
+import net.eupixel.core.Entrypoint
+import net.eupixel.core.ServerMonitor
+import net.eupixel.core.ServerRegister
+import net.eupixel.core.ShutdownTask
+import net.eupixel.util.ServerUtil
 import kotlinx.coroutines.runBlocking
 
 val sr = ServerRegister()

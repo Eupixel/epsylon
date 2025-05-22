@@ -1,6 +1,6 @@
-package dev.aquestry.core
+package net.eupixel.core
 
-import dev.aquestry.model.Server
+import net.eupixel.model.Server
 
 class ServerRegister {
 

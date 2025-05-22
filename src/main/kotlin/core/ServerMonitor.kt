@@ -1,7 +1,7 @@
-package dev.aquestry.core
+package net.eupixel.core
 
-import dev.aquestry.sr
-import dev.aquestry.util.PingUtil
+import net.eupixel.sr
+import net.eupixel.util.PingUtil
 import kotlinx.coroutines.*
 
 class ServerMonitor {

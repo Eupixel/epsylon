@@ -1,4 +1,4 @@
-package dev.aquestry.util
+package net.eupixel.util
 
 import net.lenni0451.mcping.MCPing
 

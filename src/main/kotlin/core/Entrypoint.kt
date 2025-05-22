@@ -1,6 +1,6 @@
-package dev.aquestry.core
+package net.eupixel.core
 
-import dev.aquestry.au
+import net.eupixel.au
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.minestom.server.MinecraftServer
 import net.minestom.server.event.player.AsyncPlayerConfigurationEvent
