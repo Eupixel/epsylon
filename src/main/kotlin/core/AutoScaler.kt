@@ -8,12 +8,10 @@ import net.eupixel.util.Config
 
 class AutoScaler {
     suspend fun start() {
-        val base = getData("lobby_values", "name", "base", listOf("data"))
-            ?.get("data")
-            ?.asInt(1)?: 1
-        Config.lobbyImage = getData("lobby_values", "name", "image", listOf("data"))
-            ?.get("data")
-            ?.asText("anton691/lobby:latest")?: "anton691/lobby:latest"
+        val base = getData("lobby_values", "name", "base", "data")
+            ?.toInt()?: 1
+        Config.lobbyImage = getData("lobby_values", "name", "image","data")
+            ?: "anton691/lobby:latest"
         repeat(base) {
             su.createServer(Config.lobbyImage, "lobby")
         }
