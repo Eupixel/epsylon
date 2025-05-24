@@ -13,7 +13,8 @@ import java.util.Base64
 class Entrypoint {
     fun start() {
         DirectusClient.downloadFile("icons", "name", "server", "icon", "icon.png")
-        val motd = MiniMessage.miniMessage().deserialize(System.getenv("MOTD")?: "<blue>entrypoint</blue>")
+        val rawMOTD = DirectusClient.getData("global_values", "name", "motd", listOf("data")).toString()
+        val motd = MiniMessage.miniMessage().deserialize(rawMOTD)
         val iconPath = Paths.get("icon.png")
         val iconBytes = Files.readAllBytes(iconPath)
         val favicon = "data:image/png;base64," + Base64.getEncoder().encodeToString(iconBytes)
