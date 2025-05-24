@@ -6,11 +6,17 @@ import net.minestom.server.MinecraftServer
 import net.minestom.server.event.player.AsyncPlayerConfigurationEvent
 import net.minestom.server.event.server.ServerListPingEvent
 import net.minestom.server.network.packet.server.common.TransferPacket
+import java.nio.file.Files
+import java.nio.file.Paths
+import java.util.Base64
 
 class Entrypoint {
     fun start() {
+        DirectusClient.downloadFile("icons", "name", "server", "icon", "icon.png")
         val motd = MiniMessage.miniMessage().deserialize(System.getenv("MOTD")?: "<blue>entrypoint</blue>")
-        val favicon = System.getenv("FAVICON")
+        val iconPath = Paths.get("icon.png")
+        val iconBytes = Files.readAllBytes(iconPath)
+        val favicon = "data:image/png;base64," + Base64.getEncoder().encodeToString(iconBytes)
         val minecraftServer = MinecraftServer.init()
         val instanceManager = MinecraftServer.getInstanceManager()
         val instanceContainer = instanceManager.createInstanceContainer()
