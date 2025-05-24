@@ -9,6 +9,7 @@ version = "1.0"
 
 repositories {
     mavenCentral()
+    maven { url = uri("https://jitpack.io") }
 }
 
 dependencies {
@@ -16,6 +17,7 @@ dependencies {
     implementation("net.kyori:adventure-text-minimessage:4.20.0")
     implementation("net.lenni0451:MCPing:1.4.4")
     implementation("com.github.docker-java:docker-java:3.3.0")
+    implementation("com.github.eupixel:vivlib:v0.4.0")
     implementation("org.slf4j:slf4j-simple:2.0.6")
     implementation("com.github.docker-java:docker-java-transport-httpclient5:3.3.3")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")

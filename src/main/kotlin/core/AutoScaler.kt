@@ -1,14 +1,20 @@
 package net.eupixel.core
 
+import net.eupixel.core.DirectusClient.getData
 import net.eupixel.su
-import net.eupixel.config.Config
 import net.eupixel.model.Server
 import net.eupixel.sr
 
 class AutoScaler {
     suspend fun start() {
-        repeat(Config.baseLobbies) {
-            su.createServer(Config.lobbyImage, "lobby")
+        val base = getData("lobby_values", "name", "base", listOf("data"))
+            ?.get("data")
+            ?.asInt(1)?: 1
+        val image = getData("lobby_values", "name", "image", listOf("data"))
+            ?.get("data")
+            ?.asText("anton691/lobby:latest")?: "anton691/lobby:latest"
+        repeat(base) {
+            su.createServer(image, "lobby")
         }
     }
 
