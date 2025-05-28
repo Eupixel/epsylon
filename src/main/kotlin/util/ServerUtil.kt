@@ -15,10 +15,14 @@ import kotlinx.coroutines.withContext
 import java.time.Duration
 
 class ServerUtil() {
-
     val entryHost = System.getenv("ENTRY_HOST") ?: "localhost"
 
-    val dockerHost = System.getenv("DOCKER_HOST") ?: "npipe:////./pipe/docker_engine"
+    val defaultDockerHost = if (System.getProperty("os.name").startsWith("Windows")) {
+        "npipe:////./pipe/docker_engine"
+    } else {
+        "unix:///var/run/docker.sock"
+    }
+    val dockerHost = System.getenv("DOCKER_HOST") ?: defaultDockerHost
 
     private val config: DockerClientConfig = DefaultDockerClientConfig.createDefaultConfigBuilder()
         .withDockerHost(dockerHost)
@@ -46,12 +50,9 @@ class ServerUtil() {
         val token = System.getenv("TOKEN") ?: "none"
 
         val response = client.createContainerCmd(image)
-            .withEnv(
-                "HOST=$host",
-                "TOKEN=$token"
-            )
-            .withExposedPorts(exposedPort)
+            .withEnv("HOST=$host", "TOKEN=$token")
             .withPortBindings(portBinding)
+            .withNetworkMode("entrypoint")
             .exec()
             .also { requireNotNull(it.id) }
             .let {
@@ -60,15 +61,13 @@ class ServerUtil() {
             }
 
         val inspect = client.inspectContainerCmd(response.id).exec()
-        val hostPort = inspect.networkSettings
-            .ports
-            .bindings[exposedPort]
-            ?.firstOrNull()
-            ?.hostPortSpec
-            ?.toInt()
+        val hostPort = inspect.networkSettings.ports.bindings[exposedPort]?.firstOrNull()?.hostPortSpec?.toInt()
             ?: error("No host port bound for $exposedPort")
 
-        val server = Server(response.id, type, image, entryHost, hostPort,0,false)
+        client.renameContainerCmd(response.id)
+            .withName(response.id)
+            .exec()
+        val server = Server(response.id, type, image, entryHost, hostPort, 0, false)
         sr.registerServer(server)
         println("Created Server: type=$type, host=$entryHost, port=$hostPort, id=${response.id}")
         server
