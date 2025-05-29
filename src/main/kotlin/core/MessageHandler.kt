@@ -6,17 +6,20 @@ class MessageHandler {
         Messenger.addGlobalListener(this::global)
         Messenger.addListener("queue_left", this::queueLeft)
         Messenger.addListener("queue_joined", this::queueJoined)
+        println("MessageHandler is now running!")
     }
 
     fun queueLeft(msg: String) {
-        print("queue_left:$msg")
+        println("queue_left:$msg")
     }
 
     fun queueJoined(msg: String) {
-        print("queue_joined:$msg")
+        println("queue_joined:$msg")
+        val username = msg.split("&")[0]
+        Messenger.broadcast("transfer", "$username?hypixel.net&25565")
     }
 
     fun global(channel: String, msg: String) {
-        print("global:$channel:$msg")
+        println("global:$channel:$msg")
     }
 }
