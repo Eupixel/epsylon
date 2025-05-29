@@ -5,7 +5,6 @@ import net.eupixel.util.PingUtil
 import kotlinx.coroutines.*
 
 class ServerMonitor {
-
     private var job: Job? = null
 
     fun start() {

@@ -8,6 +8,7 @@ import net.eupixel.core.ShutdownTask
 import net.eupixel.util.ServerUtil
 import kotlinx.coroutines.runBlocking
 import net.eupixel.core.DirectusClient
+import net.eupixel.core.MessageHandler
 
 val sr = ServerRegister()
 val sm = ServerMonitor()
@@ -15,6 +16,7 @@ val st = ShutdownTask()
 val su = ServerUtil()
 val au = AutoScaler()
 val et = Entrypoint()
+val mh = MessageHandler()
 
 fun main() = runBlocking {
     DirectusClient.initFromEnv()
@@ -23,4 +25,5 @@ fun main() = runBlocking {
     su.start()
     au.start()
     et.start()
+    mh.start()
 }
