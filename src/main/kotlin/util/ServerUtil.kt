@@ -12,6 +12,7 @@ import net.eupixel.model.Server
 import net.eupixel.sr
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import net.eupixel.core.Messenger
 import java.time.Duration
 
 class ServerUtil() {
@@ -69,6 +70,7 @@ class ServerUtil() {
             .exec()
         val server = Server(response.id, type, image, entryHost, hostPort, 0, false)
         sr.registerServer(server)
+        Messenger.registerTarget(response.id, response.id, 2905)
         println("Created Server: type=$type, host=$entryHost, port=$hostPort, id=${response.id}")
         server
     }
@@ -76,5 +78,6 @@ class ServerUtil() {
     fun deleteServer(id: String) {
         client.stopContainerCmd(id).withTimeout(10).exec()
         client.removeContainerCmd(id).exec()
+        Messenger.unregisterTarget(id)
     }
 }

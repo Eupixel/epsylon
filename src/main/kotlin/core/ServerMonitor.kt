@@ -12,6 +12,7 @@ class ServerMonitor {
         job = scope.launch {
             while (isActive) {
                 sr.getServers().forEach { server ->
+
                     val hostName = server.host.takeIf { it != "host" } ?: "localhost"
                     val port = server.port
                     val online = PingUtil.isOnline(hostName, port)
@@ -24,6 +25,7 @@ class ServerMonitor {
                     } else {
                         server.players = 0
                     }
+                    println("Server is $online.")
                 }
                 delay(1_000L)
             }

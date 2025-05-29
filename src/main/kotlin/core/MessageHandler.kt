@@ -8,10 +8,10 @@ class MessageHandler {
     }
 
     fun queueLeft(msg: String) {
-        print("queue_left: $msg")
+        print("queue_left:$msg")
     }
 
     fun global(channel: String, msg: String) {
-        print("global: $channel: $msg")
+        print("global:$channel:$msg")
     }
 }
