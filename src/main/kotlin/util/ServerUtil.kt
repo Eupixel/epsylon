@@ -67,7 +67,7 @@ class ServerUtil() {
         client.renameContainerCmd(response.id)
             .withName(shortid)
             .exec()
-        val server = Server(shortid, type, image, shortid, hostPort, 0, state = false, owned = true)
+        val server = Server(shortid, type, image, Config.entryHost, hostPort, 0, state = false, owned = true)
         sr.registerServer(server)
         Messenger.registerTarget(shortid, shortid, 2905)
         println("Created Server: type=$type, host=${Config.entryHost}, port=$hostPort, id=$shortid")
