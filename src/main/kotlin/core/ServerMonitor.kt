@@ -1,8 +1,8 @@
 package net.eupixel.core
 
 import net.eupixel.sr
-import net.eupixel.util.PingUtil
 import kotlinx.coroutines.*
+import net.eupixel.util.PingUtil
 
 class ServerMonitor {
     private var job: Job? = null
@@ -12,20 +12,15 @@ class ServerMonitor {
         job = scope.launch {
             while (isActive) {
                 sr.getServers().forEach { server ->
-
-                    val hostName = server.host.takeIf { it != "host" } ?: "localhost"
+                    val hostname = server.host.takeIf { it != "host" } ?: server.id
                     val port = server.port
-                    val online = PingUtil.isOnline(hostName, port)
+                    val result = PingUtil.ping(hostname, port)
+                    val online = result.first
+                    server.players = result.second
                     if (server.state != online) {
                         server.state = online
                         println("New server state $online for ${server.id}")
                     }
-                    if (online) {
-                        server.players = PingUtil.getPlayerCount(hostName, port)
-                    } else {
-                        server.players = 0
-                    }
-                    println("Server is $online.")
                 }
                 delay(1_000L)
             }

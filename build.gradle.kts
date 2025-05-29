@@ -15,10 +15,10 @@ repositories {
 dependencies {
     implementation("net.minestom:minestom-snapshots:1_21_5-69b9a5d844")
     implementation("net.kyori:adventure-text-minimessage:4.20.0")
-    implementation("net.lenni0451:MCPing:1.4.4")
     implementation("com.github.docker-java:docker-java:3.3.0")
     implementation("com.github.eupixel:vivlib:v0.4.6")
     implementation("org.slf4j:slf4j-simple:2.0.6")
+    implementation("org.json:json:20240303")
     implementation("com.github.docker-java:docker-java-transport-httpclient5:3.3.3")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
 }
