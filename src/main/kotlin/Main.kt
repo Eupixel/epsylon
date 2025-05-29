@@ -19,7 +19,7 @@ val et = Entrypoint()
 val mh = MessageHandler()
 
 fun main() = runBlocking {
-    println("v4")
+    println("v1")
     DirectusClient.initFromEnv()
     sm.start()
     st.start()

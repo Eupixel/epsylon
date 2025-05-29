@@ -8,4 +8,5 @@ data class Server(
     val port: Int,
     var players: Int,
     var state: Boolean,
+    var owned: Boolean,
 )

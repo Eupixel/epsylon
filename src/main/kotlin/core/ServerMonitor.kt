@@ -12,8 +12,8 @@ class ServerMonitor {
         job = scope.launch {
             while (isActive) {
                 sr.getServers().forEach { server ->
-                    val hostname = server.host.takeIf { it != "host" } ?: server.id
-                    val port = server.port
+                    val hostname = server.host.takeIf{!server.owned}?: server.id
+                    val port = server.port.takeIf{!server.owned}?: 25565
                     val result = PingUtil.ping(hostname, port)
                     val online = result.first
                     server.players = result.second

@@ -16,8 +16,6 @@ import net.eupixel.core.Messenger
 import java.time.Duration
 
 class ServerUtil() {
-    val entryHost = System.getenv("ENTRY_HOST") ?: "localhost"
-
     val defaultDockerHost = if (System.getProperty("os.name").startsWith("Windows")) {
         "npipe:////./pipe/docker_engine"
     } else {
@@ -65,13 +63,14 @@ class ServerUtil() {
         val hostPort = inspect.networkSettings.ports.bindings[exposedPort]?.firstOrNull()?.hostPortSpec?.toInt()
             ?: error("No host port bound for $exposedPort")
 
+        val shortid = response.id.take(12)
         client.renameContainerCmd(response.id)
-            .withName(response.id)
+            .withName(shortid)
             .exec()
-        val server = Server(response.id, type, image, entryHost, hostPort, 0, false)
+        val server = Server(shortid, type, image, shortid, hostPort, 0, state = false, owned = true)
         sr.registerServer(server)
-        Messenger.registerTarget(response.id, response.id, 2905)
-        println("Created Server: type=$type, host=$entryHost, port=$hostPort, id=${response.id}")
+        Messenger.registerTarget(shortid, shortid, 2905)
+        println("Created Server: type=$type, host=${Config.entryHost}, port=$hostPort, id=$shortid")
         server
     }
 

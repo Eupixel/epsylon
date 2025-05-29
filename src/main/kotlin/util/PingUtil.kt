@@ -13,10 +13,8 @@ object PingUtil {
                 socket.soTimeout = 3000
                 val out = DataOutputStream(socket.getOutputStream())
                 val input = DataInputStream(socket.getInputStream())
-
                 val hostBytes = host.toByteArray(StandardCharsets.UTF_8)
                 val packetLength = 1 + varIntSize(47) + varIntSize(hostBytes.size) + hostBytes.size + 2 + 1
-
                 writeVarInt(out, packetLength)
                 writeVarInt(out, 0x00)
                 writeVarInt(out, 47)
@@ -24,10 +22,8 @@ object PingUtil {
                 out.write(hostBytes)
                 out.writeShort(port)
                 writeVarInt(out, 1)
-
                 writeVarInt(out, 1)
                 writeVarInt(out, 0x00)
-
                 readVarInt(input)
                 readVarInt(input)
                 val stringLength = readVarInt(input)
