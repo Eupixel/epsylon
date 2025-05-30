@@ -1,6 +1,7 @@
 package net.eupixel.core
 
 import net.eupixel.au
+import net.eupixel.sr
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.minestom.server.MinecraftServer
 import net.minestom.server.event.player.AsyncPlayerConfigurationEvent
@@ -34,7 +35,11 @@ class Entrypoint {
         }
 
         globalEventHandler.addListener(ServerListPingEvent::class.java) { event ->
-            event.responseData.online = 0
+            var count = 0
+            sr.getServers().forEach { server ->
+                count += server.players
+            }
+            event.responseData.online = count
             event.responseData.maxPlayer = 787
             event.responseData.description = motd
             event.responseData.favicon = favicon
