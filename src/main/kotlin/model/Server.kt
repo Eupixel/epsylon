@@ -9,4 +9,5 @@ data class Server(
     var players: Int,
     var state: Boolean,
     var owned: Boolean,
+    var pending: MutableList<String>,
 )

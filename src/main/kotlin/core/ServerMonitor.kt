@@ -20,6 +20,12 @@ class ServerMonitor {
                     if (server.state != online) {
                         server.state = online
                         println("New server state $online for ${server.id}")
+                        if(server.state) {
+                            server.pending.forEach {
+                                server.pending.remove(it)
+                                Messenger.broadcast("transfer", "$it?${server.host}&${server.port}")
+                            }
+                        }
                     }
                 }
                 delay(1_000L)

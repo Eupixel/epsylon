@@ -14,13 +14,15 @@ class Config {
         val modesNames = listItems("gamemodes", "name")
         for (mode in modesNames) {
             val playerCounts = mutableSetOf<String>()
+            val friendlyName = getData("gamemodes", "name", mode, "friendly_name").toString()
+            val image = getData("gamemodes", "name", mode, "image").toString()
             getFields("gamemodes", "name", mode, "player_counts").forEach {
                 playerCounts.add(it.asText())
             }
-            gamemodes.add(Gamemode(mode, getData("gamemodes", "name", mode, "friendly_name").toString(), playerCounts.toTypedArray()))
+            gamemodes.add(Gamemode(mode, friendlyName, image, playerCounts.toTypedArray()))
         }
         gamemodes.forEach {
-            println("Registered Gamemode: name=${it.name}, friendly_name=${it.friendlyName}, player_counts=${it.playerCounts.toList()}")
+            println("Registered Gamemode: name=${it.name}, friendly_name=${it.friendlyName}, image=${it.image}, player_counts=${it.playerCounts.toList()}")
         }
     }
 }

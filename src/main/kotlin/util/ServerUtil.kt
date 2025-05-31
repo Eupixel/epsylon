@@ -15,6 +15,7 @@ import kotlinx.coroutines.withContext
 import net.eupixel.co
 import net.eupixel.core.Messenger
 import java.time.Duration
+import kotlin.collections.mutableListOf
 
 class ServerUtil() {
     val defaultDockerHost = if (System.getProperty("os.name").startsWith("Windows")) {
@@ -68,7 +69,7 @@ class ServerUtil() {
         client.renameContainerCmd(response.id)
             .withName(shortid)
             .exec()
-        val server = Server(shortid, type, image, co.entryHost, hostPort, 0, state = false, owned = true)
+        val server = Server(shortid, type, image, co.entryHost, hostPort, 0, state = false, owned = true, mutableListOf())
         sr.registerServer(server)
         Messenger.registerTarget(shortid, shortid, 2905)
         println("Created Server: type=$type, host=${co.entryHost}, port=$hostPort, id=$shortid")
