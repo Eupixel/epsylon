@@ -12,6 +12,7 @@ import net.eupixel.model.Server
 import net.eupixel.sr
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import net.eupixel.co
 import net.eupixel.core.Messenger
 import java.time.Duration
 
@@ -38,7 +39,7 @@ class ServerUtil() {
     private val client: DockerClient = DockerClientImpl.getInstance(config, httpClient)
 
     fun start() {
-        client.pullImageCmd(Config.lobbyImage).start().awaitCompletion()
+        client.pullImageCmd(co.lobbyImage).start().awaitCompletion()
     }
 
     @Suppress("DEPRECATION")
@@ -67,10 +68,10 @@ class ServerUtil() {
         client.renameContainerCmd(response.id)
             .withName(shortid)
             .exec()
-        val server = Server(shortid, type, image, Config.entryHost, hostPort, 0, state = false, owned = true)
+        val server = Server(shortid, type, image, co.entryHost, hostPort, 0, state = false, owned = true)
         sr.registerServer(server)
         Messenger.registerTarget(shortid, shortid, 2905)
-        println("Created Server: type=$type, host=${Config.entryHost}, port=$hostPort, id=$shortid")
+        println("Created Server: type=$type, host=${co.entryHost}, port=$hostPort, id=$shortid")
         server
     }
 
