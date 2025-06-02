@@ -1,13 +1,11 @@
 package net.eupixel.core
 
-import net.eupixel.sm
 import net.eupixel.sr
 import net.eupixel.su
 
 class ShutdownTask {
     fun start() {
         Runtime.getRuntime().addShutdownHook(Thread {
-            sm.stop()
             sr.getServers().forEach {
                 try {
                     su.deleteServer(it.id)

@@ -10,6 +10,10 @@ class ServerRegister {
         servers.add(server)
     }
 
+    fun unregisterServer(server: Server) {
+        servers.remove(server)
+    }
+
     fun getServers(): List<Server> {
         val snapshot = servers.toList()
         return snapshot

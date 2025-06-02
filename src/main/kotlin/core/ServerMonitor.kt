@@ -5,36 +5,31 @@ import kotlinx.coroutines.*
 import net.eupixel.util.PingUtil
 
 class ServerMonitor {
-    private var job: Job? = null
+    private val scope = CoroutineScope(Dispatchers.Default)
 
     fun start() {
-        val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
-        job = scope.launch {
+        scope.launch {
             while (isActive) {
                 sr.getServers().forEach { server ->
-                    val hostname = server.host.takeIf{!server.owned}?: server.id
-                    val port = server.port.takeIf{!server.owned}?: 25565
+                    val hostname = server.host.takeIf { !server.owned } ?: server.id
+                    val port = server.port.takeIf { !server.owned } ?: 25565
                     val result = PingUtil.ping(hostname, port)
                     val online = result.first
                     server.players = result.second
-                    if (server.state != online) {
+                    if(server.state != online) {
                         server.state = online
                         println("New server state $online for ${server.id}")
                         if(server.state) {
-                            server.pending.forEach {
-                                server.pending.remove(it)
+                            val pendingCopy = server.pending.toList()
+                            pendingCopy.forEach {
                                 Messenger.broadcast("transfer", "$it?${server.host}&${server.port}")
                             }
+                            server.pending.clear()
                         }
                     }
                 }
-                delay(1_000L)
+                delay(1000L)
             }
         }
-    }
-
-    fun stop() {
-        job?.cancel()
-        job = null
     }
 }

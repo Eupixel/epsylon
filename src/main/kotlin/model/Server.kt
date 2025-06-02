@@ -5,9 +5,11 @@ data class Server(
     val type: String,
     val image: String,
     val host: String,
+    var queue: String,
     val port: Int,
     var players: Int,
     var state: Boolean,
     var owned: Boolean,
-    var pending: MutableList<String>,
+    var todelete: Boolean,
+    var pending: MutableList<String>
 )

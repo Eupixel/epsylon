@@ -7,7 +7,7 @@ import net.eupixel.model.Server
 import net.eupixel.sr
 
 class AutoScaler {
-    suspend fun start() {
+    fun start() {
         val base = getData("lobby_values", "name", "base", "data")
             ?.toInt()?: 1
         co.lobbyImage = getData("lobby_values", "name", "image","data")
@@ -17,13 +17,9 @@ class AutoScaler {
         }
     }
 
-    fun getLobby(): Server {
-        var lobby = sr.getServers()[0]
-        sr.getServers().forEach {
-            if(it.players < lobby.players) {
-                lobby = it
-            }
-        }
-        return lobby
+    fun getLobby(): Server? {
+        return sr.getServers()
+            .filter { it.type == "lobby" && it.state }
+            .minByOrNull { it.players }
     }
 }

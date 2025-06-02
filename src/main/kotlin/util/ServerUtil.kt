@@ -10,12 +10,10 @@ import com.github.dockerjava.core.DockerClientConfig
 import com.github.dockerjava.core.DockerClientImpl
 import net.eupixel.model.Server
 import net.eupixel.sr
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.runBlocking
 import net.eupixel.co
 import net.eupixel.core.Messenger
 import java.time.Duration
-import kotlin.collections.mutableListOf
 
 class ServerUtil() {
     val defaultDockerHost = if (System.getProperty("os.name").startsWith("Windows")) {
@@ -40,16 +38,19 @@ class ServerUtil() {
     private val client: DockerClient = DockerClientImpl.getInstance(config, httpClient)
 
     fun start() {
-        client.pullImageCmd(co.lobbyImage).start().awaitCompletion()
+        pullImage(co.lobbyImage)
+    }
+
+    fun pullImage(image: String) {
+        client.pullImageCmd(image).start().awaitCompletion()
     }
 
     @Suppress("DEPRECATION")
-    suspend fun createServer(image: String, type: String): Server = withContext(Dispatchers.IO) {
+    fun createServer(image: String, type: String): Server = runBlocking {
         val exposedPort = ExposedPort.tcp(25565)
         val portBinding = PortBinding(Ports.Binding.bindPort(0), exposedPort)
         val host = System.getenv("HOST") ?: "none"
         val token = System.getenv("TOKEN") ?: "none"
-
         val response = client.createContainerCmd(image)
             .withEnv("HOST=$host", "TOKEN=$token")
             .withPortBindings(portBinding)
@@ -60,16 +61,14 @@ class ServerUtil() {
                 client.startContainerCmd(it.id).exec()
                 it
             }
-
         val inspect = client.inspectContainerCmd(response.id).exec()
         val hostPort = inspect.networkSettings.ports.bindings[exposedPort]?.firstOrNull()?.hostPortSpec?.toInt()
             ?: error("No host port bound for $exposedPort")
-
         val shortid = response.id.take(12)
         client.renameContainerCmd(response.id)
             .withName(shortid)
             .exec()
-        val server = Server(shortid, type, image, co.entryHost, hostPort, 0, state = false, owned = true, mutableListOf())
+        val server = Server(shortid, type, image, co.entryHost, "none", hostPort, 0, state = false, owned = true, todelete = false, mutableListOf())
         sr.registerServer(server)
         Messenger.registerTarget(shortid, shortid, 2905)
         println("Created Server: type=$type, host=${co.entryHost}, port=$hostPort, id=$shortid")
@@ -77,8 +76,12 @@ class ServerUtil() {
     }
 
     fun deleteServer(id: String) {
-        client.stopContainerCmd(id).withTimeout(10).exec()
-        client.removeContainerCmd(id).exec()
-        Messenger.unregisterTarget(id)
+        val server = sr.getServers().find { it.id == id }
+        if (server != null) {
+            sr.unregisterServer(server)
+            client.stopContainerCmd(id).withTimeout(10).exec()
+            client.removeContainerCmd(id).exec()
+            Messenger.unregisterTarget(id)
+        }
     }
 }

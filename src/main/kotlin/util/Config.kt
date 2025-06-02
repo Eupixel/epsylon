@@ -4,11 +4,12 @@ import net.eupixel.core.DirectusClient.listItems
 import net.eupixel.core.DirectusClient.getData
 import net.eupixel.core.DirectusClient.getFields
 import net.eupixel.model.Gamemode
+import net.eupixel.qm
+import net.eupixel.su
 
 class Config {
     var lobbyImage: String = "anton691/lobby:latest"
     val entryHost = System.getenv("ENTRY_HOST") ?: "localhost"
-    val gamemodes = mutableSetOf<Gamemode>()
 
     fun init() {
         val modesNames = listItems("gamemodes", "name")
@@ -19,9 +20,10 @@ class Config {
             getFields("gamemodes", "name", mode, "player_counts").forEach {
                 playerCounts.add(it.asText())
             }
-            gamemodes.add(Gamemode(mode, friendlyName, image, playerCounts.toTypedArray()))
+            qm.queues.add(Gamemode(mode, friendlyName, image, playerCounts.toMutableList(), ArrayList()))
+            su.pullImage(image)
         }
-        gamemodes.forEach {
+        qm.queues.forEach {
             println("Registered Gamemode: name=${it.name}, friendly_name=${it.friendlyName}, image=${it.image}, player_counts=${it.playerCounts.toList()}")
         }
     }

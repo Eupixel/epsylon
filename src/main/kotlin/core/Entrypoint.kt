@@ -25,13 +25,16 @@ class Entrypoint {
         val globalEventHandler = MinecraftServer.getGlobalEventHandler()
 
         globalEventHandler.addListener(AsyncPlayerConfigurationEvent::class.java) { event ->
-            au.getLobby().let { lobby ->
                 event.apply {
+                    val lobby = au.getLobby()
+                    if(lobby == null) {
+                        event.player.kick("No lobby available!")
+                        return@addListener
+                    }
                     spawningInstance = instanceContainer
                     println("${player.username} joined and was redirected to ${lobby.host}:${lobby.port}")
                     player.sendPacket(TransferPacket(lobby.host, lobby.port))
                 }
-            }
         }
 
         globalEventHandler.addListener(ServerListPingEvent::class.java) { event ->
