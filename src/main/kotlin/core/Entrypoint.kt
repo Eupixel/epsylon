@@ -1,6 +1,6 @@
 package net.eupixel.core
 
-import net.eupixel.au
+import net.eupixel.lm
 import net.eupixel.sr
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.minestom.server.MinecraftServer
@@ -26,7 +26,7 @@ class Entrypoint {
 
         globalEventHandler.addListener(AsyncPlayerConfigurationEvent::class.java) { event ->
                 event.apply {
-                    val lobby = au.getLobby()
+                    val lobby = lm.getLobby()
                     if(lobby == null) {
                         event.player.kick("No lobby available!")
                         return@addListener

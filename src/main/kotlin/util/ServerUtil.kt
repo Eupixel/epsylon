@@ -68,7 +68,7 @@ class ServerUtil() {
         client.renameContainerCmd(response.id)
             .withName(shortid)
             .exec()
-        val server = Server(shortid, type, image, co.entryHost, "none", hostPort, 0, state = false, owned = true, todelete = false, mutableListOf())
+        val server = Server(shortid, type, image, co.entryHost, "none", hostPort, 0, state = false, owned = true, mutableListOf())
         sr.registerServer(server)
         Messenger.registerTarget(shortid, shortid, 2905)
         println("Created Server: type=$type, host=${co.entryHost}, port=$hostPort, id=$shortid")
@@ -82,6 +82,7 @@ class ServerUtil() {
             client.stopContainerCmd(id).withTimeout(10).exec()
             client.removeContainerCmd(id).exec()
             Messenger.unregisterTarget(id)
+            println("Deleted Server: type=${server.type}, host=${co.entryHost}, port=${server.port}, id=${server.id}")
         }
     }
 }

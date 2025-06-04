@@ -50,4 +50,15 @@ class QueueManager {
             }
         }
     }
+
+    fun removePlayer(player: String) {
+        queues.forEach {
+            if(it.queued.contains(player)) {
+                println("Removed Player from Queue: username=${player}, name=${it.name}")
+                it.queued.remove(player)
+            }
+        }
+    }
+
+    fun inQueue(player: String): Boolean = queues.any { it.queued.contains(player) }
 }
