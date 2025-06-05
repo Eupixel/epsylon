@@ -7,6 +7,7 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import net.eupixel.model.Gamemode
 import net.eupixel.su
+import net.eupixel.util.PlayerUtil
 
 class QueueManager {
     val queues = mutableListOf<Gamemode>()
@@ -22,7 +23,13 @@ class QueueManager {
     }
 
     fun proccessQueue() {
-        queues.forEach { gamemode ->
+        queues.forEach outer@ { gamemode ->
+            gamemode.queued.forEach {
+                if(!PlayerUtil.isOnline(it)) {
+                    gamemode.queued.remove(it)
+                    return@outer
+                }
+            }
             val capacities = gamemode.playerCounts.mapNotNull { countStr ->
                 val parts = countStr.split("x")
                 val teams = parts.getOrNull(0)?.toIntOrNull()
