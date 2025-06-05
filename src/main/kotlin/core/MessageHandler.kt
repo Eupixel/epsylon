@@ -2,16 +2,23 @@ package net.eupixel.core
 
 import net.eupixel.lm
 import net.eupixel.qm
+import net.eupixel.sr
 import net.eupixel.su
 
 class MessageHandler {
     fun start() {
         Messenger.bind("0.0.0.0", 2905)
-        Messenger.addListener("queue_join_request", this::queueJoinRequest)
-        Messenger.addListener("queue_leave_request", this::queueLeaveRequest)
-        Messenger.addListener("lobby", this::lobby)
-        Messenger.addListener("rmme", this::rmme)
+        Messenger.addRequestHandler("server_list", ::handleServerList)
+        Messenger.addListener("queue_join_request", ::queueJoinRequest)
+        Messenger.addListener("queue_leave_request", ::queueLeaveRequest)
+        Messenger.addListener("lobby", ::lobby)
+        Messenger.addListener("rmme", ::rmme)
         println("MessageHandler is now running!")
+    }
+
+    private fun handleServerList(msg: String = ""): String {
+        val servers = sr.getServers()
+        return servers.joinToString("#") { "${it.id}&${it.type}&${it.state}&${it.players}" }
     }
 
     fun queueJoinRequest(msg: String) {
