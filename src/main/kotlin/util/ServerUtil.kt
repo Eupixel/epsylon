@@ -38,7 +38,7 @@ class ServerUtil() {
     private val client: DockerClient = DockerClientImpl.getInstance(config, httpClient)
 
     fun start() {
-        // pullImage(co.lobbyImage)
+        pullImage(co.lobbyImage)
     }
 
     fun pullImage(image: String) {
