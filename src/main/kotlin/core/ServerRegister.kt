@@ -3,7 +3,6 @@ package net.eupixel.core
 import net.eupixel.model.Server
 
 class ServerRegister {
-
     private var servers = mutableListOf<Server>()
 
     fun registerServer(server: Server) {
