@@ -9,9 +9,12 @@ import net.eupixel.su
 
 class Config {
     var lobbyImage: String = "anton691/lobby:latest"
+    var maxPlayersLobby: Int = 20
     val entryHost = System.getenv("ENTRY_HOST") ?: "localhost"
 
     fun init() {
+        lobbyImage = getData("lobby_values", "name", "image", "data")?: "anton691/lobby:latest"
+        maxPlayersLobby = getData("lobby_values", "name", "max_players", "data")?.toInt() ?: 20
         val modesNames = listItems("gamemodes", "name")
         for (mode in modesNames) {
             val playerCounts = mutableSetOf<String>()
