@@ -2,7 +2,8 @@ package net.eupixel.core
 
 import net.eupixel.sr
 import kotlinx.coroutines.*
-import util.PingUtil
+import net.eupixel.vivlib.util.PingUtil
+import net.eupixel.vivlib.core.Messenger
 
 class ServerMonitor {
     private val scope = CoroutineScope(Dispatchers.Default)

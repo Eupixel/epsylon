@@ -1,6 +1,6 @@
 package net.eupixel.util
 
-import net.eupixel.core.Messenger
+import net.eupixel.vivlib.core.Messenger
 import net.eupixel.sr
 
 object PlayerUtil {

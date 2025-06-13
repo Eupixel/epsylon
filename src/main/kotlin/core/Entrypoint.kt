@@ -1,7 +1,10 @@
 package net.eupixel.core
 
+import net.eupixel.co
 import net.eupixel.lm
 import net.eupixel.sr
+import net.eupixel.vivlib.core.DirectusClient
+import net.eupixel.vivlib.core.Messenger
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.minestom.server.MinecraftServer
 import net.minestom.server.event.player.AsyncPlayerConfigurationEvent
@@ -9,6 +12,7 @@ import net.minestom.server.event.server.ServerListPingEvent
 import net.minestom.server.network.packet.server.common.TransferPacket
 import java.nio.file.Files
 import java.nio.file.Paths
+import java.time.Instant
 import java.util.Base64
 
 class Entrypoint {
@@ -33,6 +37,7 @@ class Entrypoint {
                     }
                     spawningInstance = instanceContainer
                     println("${player.username} joined and was redirected to ${lobby.host}:${lobby.port}")
+                    Messenger.send(lobby.id, "add_whitelist", "${player.uuid}&${player.playerConnection.remoteAddress}&${co.playerTTL}&${Instant.now()}")
                     player.sendPacket(TransferPacket(lobby.host, lobby.port))
                 }
         }

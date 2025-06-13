@@ -12,7 +12,7 @@ import net.eupixel.model.Server
 import net.eupixel.sr
 import kotlinx.coroutines.runBlocking
 import net.eupixel.co
-import net.eupixel.core.Messenger
+import net.eupixel.vivlib.core.Messenger
 import java.time.Duration
 
 class ServerUtil() {

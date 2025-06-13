@@ -1,19 +1,21 @@
 package net.eupixel.util
 
-import net.eupixel.core.DirectusClient.listItems
-import net.eupixel.core.DirectusClient.getData
-import net.eupixel.core.DirectusClient.getFields
+import net.eupixel.vivlib.core.DirectusClient.listItems
+import net.eupixel.vivlib.core.DirectusClient.getData
+import net.eupixel.vivlib.core.DirectusClient.getFields
 import net.eupixel.model.Gamemode
 import net.eupixel.qm
 import net.eupixel.su
 
 class Config {
     var lobbyImage: String = "anton691/lobby:latest"
+    var playerTTL: Int = 30
     var maxPlayersLobby: Int = 20
     val entryHost = System.getenv("ENTRY_HOST") ?: "localhost"
 
     fun init() {
         lobbyImage = getData("lobby_values", "name", "image", "data")?: "anton691/lobby:latest"
+        playerTTL = getData("global_values", "name", "player_ttl", "data")?.toInt()?: 30
         maxPlayersLobby = getData("lobby_values", "name", "max_players", "data")?.toInt() ?: 20
         val modesNames = listItems("gamemodes", "name")
         for (mode in modesNames) {
