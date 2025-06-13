@@ -3,9 +3,10 @@ package net.eupixel.core
 import net.eupixel.co
 import net.eupixel.lm
 import net.eupixel.sr
+import net.eupixel.vivlib.core.DBTranslator
 import net.eupixel.vivlib.core.DirectusClient
 import net.eupixel.vivlib.core.Messenger
-import net.kyori.adventure.text.minimessage.MiniMessage
+import net.kyori.adventure.text.minimessage.MiniMessage.miniMessage
 import net.minestom.server.MinecraftServer
 import net.minestom.server.event.player.AsyncPlayerConfigurationEvent
 import net.minestom.server.event.server.ServerListPingEvent
@@ -19,7 +20,7 @@ class Entrypoint {
     fun start() {
         DirectusClient.downloadFile("icons", "name", "server", "icon", "icon.png")
         val rawMOTD = DirectusClient.getData("global_values", "name", "motd", "data").toString()
-        val motd = MiniMessage.miniMessage().deserialize(rawMOTD)
+        val motd = miniMessage().deserialize(rawMOTD)
         val iconPath = Paths.get("icon.png")
         val iconBytes = Files.readAllBytes(iconPath)
         val favicon = "data:image/png;base64," + Base64.getEncoder().encodeToString(iconBytes)
@@ -32,12 +33,12 @@ class Entrypoint {
                 event.apply {
                     val lobby = lm.getLobby()
                     if(lobby == null) {
-                        event.player.kick("No lobby available!")
+                        event.player.kick(miniMessage().deserialize(DBTranslator.get("no_lobby", event.player.locale)))
                         return@addListener
                     }
                     spawningInstance = instanceContainer
-                    println("${player.username} joined and was redirected to ${lobby.host}:${lobby.port}")
-                    Messenger.send(lobby.id, "add_whitelist", "${player.uuid}&${player.playerConnection.remoteAddress}&${co.playerTTL}&${Instant.now()}")
+                    println("${player.username} joined and was redirected to ${lobby.host}:${lobby.port}!")
+                    Messenger.send(lobby.id, "add_whitelist", "${player.uuid}&${co.playerTTL}&${Instant.now()}")
                     player.sendPacket(TransferPacket(lobby.host, lobby.port))
                 }
         }

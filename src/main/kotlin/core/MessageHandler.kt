@@ -41,12 +41,10 @@ class MessageHandler {
     }
 
     fun lobby(msg: String) {
-        val uuid = msg.split("&")[0]
-        val ip = msg.split("&")[1]
         val lobby = lm.getLobby()
         if(lobby != null) {
-            Messenger.send(lobby.id, "add_whitelist", "$uuid&$ip&${co.playerTTL}&${Instant.now()}")
-            Messenger.broadcast("transfer", "$uuid?${lobby.host}&${lobby.port}")
+            Messenger.send(lobby.id, "add_whitelist", "$msg&${co.playerTTL}&${Instant.now()}")
+            Messenger.broadcast("transfer", "$msg?${lobby.host}&${lobby.port}")
         }
     }
 
