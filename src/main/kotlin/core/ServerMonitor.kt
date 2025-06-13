@@ -24,7 +24,7 @@ class ServerMonitor {
                             val pendingCopy = server.pending.toList()
                             pendingCopy.forEach {
                                 Messenger.broadcast("queue_leave", it)
-                                Messenger.broadcast("transfer", "$it?${server.host}&${server.port}")
+                                Messenger.broadcast("transfer", "$it&${server.host}&${server.port}")
                             }
                             server.pending.clear()
                         }

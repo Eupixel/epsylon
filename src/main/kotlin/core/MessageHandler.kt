@@ -6,6 +6,7 @@ import net.eupixel.qm
 import net.eupixel.sr
 import net.eupixel.su
 import net.eupixel.vivlib.core.Messenger
+import java.time.Instant
 
 class MessageHandler {
     fun start() {
@@ -39,10 +40,13 @@ class MessageHandler {
         }
     }
 
-    fun lobby(player: String) {
+    fun lobby(msg: String) {
+        val uuid = msg.split("&")[0]
+        val ip = msg.split("&")[1]
         val lobby = lm.getLobby()
         if(lobby != null) {
-            Messenger.broadcast("transfer", "$player?${lobby.host}&${lobby.port}")
+            Messenger.send(lobby.id, "add_whitelist", "$uuid&$ip&${co.playerTTL}&${Instant.now()}")
+            Messenger.broadcast("transfer", "$uuid?${lobby.host}&${lobby.port}")
         }
     }
 
