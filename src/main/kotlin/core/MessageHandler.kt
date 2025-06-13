@@ -25,26 +25,26 @@ class MessageHandler {
     }
 
     fun queueJoinRequest(msg: String) {
-        val username = msg.split("&")[0]
+        val uuid = msg.split("&")[0]
         val gamemode = msg.split("&")[1]
-        if(!qm.inQueue(username)) {
-            qm.addPlayer(username, gamemode)
-            Messenger.broadcast("queue_join", "$username&$gamemode")
+        if(!qm.inQueue(uuid)) {
+            qm.addPlayer(uuid, gamemode)
+            Messenger.broadcast("queue_join", "$uuid&$gamemode")
         }
     }
 
-    fun queueLeaveRequest(player: String) {
-        if(qm.inQueue(player)) {
-            qm.removePlayer(player)
-            Messenger.broadcast("queue_leave", player)
+    fun queueLeaveRequest(uuid: String) {
+        if(qm.inQueue(uuid)) {
+            qm.removePlayer(uuid)
+            Messenger.broadcast("queue_leave", uuid)
         }
     }
 
-    fun lobby(msg: String) {
+    fun lobby(uuid: String) {
         val lobby = lm.getLobby()
         if(lobby != null) {
-            Messenger.send(lobby.id, "add_whitelist", "$msg&${co.playerTTL}&${Instant.now()}")
-            Messenger.broadcast("transfer", "$msg?${lobby.host}&${lobby.port}")
+            Messenger.send(lobby.id, "add_whitelist", "$uuid&${co.playerTTL}&${Instant.now()}")
+            Messenger.broadcast("transfer", "$uuid?${lobby.host}&${lobby.port}")
         }
     }
 

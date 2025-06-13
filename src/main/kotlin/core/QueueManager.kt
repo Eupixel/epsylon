@@ -49,20 +49,20 @@ class QueueManager {
         }
     }
 
-    fun addPlayer(player: String, gamemode: String) {
+    fun addPlayer(uuid: String, gamemode: String) {
         queues.forEach {
             if(it.friendlyName == gamemode) {
-                println("Added Player to Queue: username=${player}, name=${it.name}")
-                it.queued.add(player)
+                println("Added Player to Queue: uuid=${uuid}, name=${it.name}")
+                it.queued.add(uuid)
             }
         }
     }
 
-    fun removePlayer(player: String) {
+    fun removePlayer(uuid: String) {
         queues.forEach {
-            if(it.queued.contains(player)) {
-                println("Removed Player from Queue: username=${player}, name=${it.name}")
-                it.queued.remove(player)
+            if(it.queued.contains(uuid)) {
+                println("Removed Player from Queue: uuid=${uuid}, name=${it.name}")
+                it.queued.remove(uuid)
             }
         }
     }

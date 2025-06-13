@@ -2,8 +2,10 @@ package net.eupixel.core
 
 import net.eupixel.sr
 import kotlinx.coroutines.*
+import net.eupixel.co
 import net.eupixel.vivlib.util.PingUtil
 import net.eupixel.vivlib.core.Messenger
+import java.time.Instant
 
 class ServerMonitor {
     private val scope = CoroutineScope(Dispatchers.Default)
@@ -24,7 +26,8 @@ class ServerMonitor {
                             val pendingCopy = server.pending.toList()
                             pendingCopy.forEach {
                                 Messenger.broadcast("queue_leave", it)
-                                Messenger.broadcast("transfer", "$it&${server.host}&${server.port}")
+                                Messenger.send(server.id, "add_whitelist", "${it}&${co.playerTTL}&${Instant.now()}")
+                                Messenger.broadcast("transfer", "$it?${server.host}&${server.port}")
                             }
                             server.pending.clear()
                         }
